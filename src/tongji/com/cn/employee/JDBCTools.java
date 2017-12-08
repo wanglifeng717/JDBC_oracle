@@ -3,11 +3,41 @@ package tongji.com.cn.employee;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
 
 public class JDBCTools {
+	
+	
+	/**
+	 * 执行 SQL 的方法,使用preparedstatement构成重载
+	 * 
+	 * @param sql: insert, update 或 delete。 而不包含 select
+	 */
+	public static void update(String sql,Object ... args )
+	{//用可变参数更好，不然程序里面还要封装成数组才能用。这样写的话，你爱传几个就传几个
+		Connection connection=null;
+		PreparedStatement preparedStatement=null;
+		try {
+			connection=JDBCTools.getConnection();
+			preparedStatement=connection.prepareStatement(sql);
+			
+			for(int i=0;i<args.length;i++)
+			{
+				preparedStatement.setObject(i+1, args[i]);
+			}
+			
+			preparedStatement.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			JDBCTools.release(preparedStatement, connection);
+		}
+	}
 	
 	/**
 	 * 执行 SQL 的方法

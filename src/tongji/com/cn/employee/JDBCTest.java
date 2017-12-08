@@ -1,13 +1,13 @@
 package tongji.com.cn.employee;
 
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Scanner;
 
 import org.junit.Test;
-
-
 
 public class JDBCTest {
 	
@@ -19,10 +19,115 @@ public class JDBCTest {
 	
 	
 	
+@Test
+public  void testPreparedStatement()
+{
+	Connection connection=null;
+	PreparedStatement preparedStatement=null;
+	try 
+	{
+		String sql="insert into employees (employee_id,last_name,salary,email,hire_date) values(?,?,?,?,?)";
+		connection = JDBCTools.getConnection();
+		preparedStatement = connection.prepareStatement(sql);
+		
+		preparedStatement.setInt(1, 52);
+		preparedStatement.setString(2, "张甜");
+		preparedStatement.setInt(3, 998);
+		preparedStatement.setString(4, "hahia@qq.com");
+		preparedStatement.setDate(5, new Date(new java.util.Date().getTime()));
+		
+		preparedStatement.executeUpdate();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	finally
+	{
+		JDBCTools.release(preparedStatement, connection);
+	}
+}
+/**
+ * 在JDBCTools中加入了基于preparedStatement实现的update,测试插入一条数据
+ */
+@Test
+public  void testPreparedStatement2()
+{
+	String sql="insert into employees(employee_id,last_name,salary,email) values(?,?,?,?)";
+	JDBCTools.update(sql, 53,"芙蓉姐姐",99,"tanwanggaidihu@qq.com");
+	
+}
 	
 	
-	
-	
+/**复制过来的，不一定能跑
+ * 使用 PreparedStatement 将有效的解决 SQL 注入问题.
+ */
+@Test
+public void testSQLInjection2() {
+	String username = "a' OR PASSWORD = ";
+	String password = " OR '1'='1";
+
+	String sql = "SELECT * FROM users WHERE username = ? "
+			+ "AND password = ?";
+
+	Connection connection = null;
+	PreparedStatement preparedStatement = null;
+	ResultSet resultSet = null;
+
+	try {
+		connection = JDBCTools.getConnection();
+		preparedStatement = connection.prepareStatement(sql);
+
+		preparedStatement.setString(1, username);
+		preparedStatement.setString(2, password);
+
+		resultSet = preparedStatement.executeQuery();
+
+		if (resultSet.next()) {
+			System.out.println("登录成功!");
+		} else {
+			System.out.println("用户名和密码不匹配或用户名不存在. ");
+		}
+
+	} catch (Exception e) {
+		e.printStackTrace();
+	} finally {
+		JDBCTools.release( preparedStatement, connection,resultSet);
+	}
+}
+
+/**
+ * SQL 注入.:复制过来的，不一定能跑
+ */
+@Test
+public void testSQLInjection() {
+	String username = "a' OR PASSWORD = ";
+	String password = " OR '1'='1";
+
+	String sql = "SELECT * FROM users WHERE username = '" + username
+			+ "' AND " + "password = '" + password + "'";
+
+	System.out.println(sql);
+
+	Connection connection = null;
+	Statement statement = null;
+	ResultSet resultSet = null;
+
+	try {
+		connection = JDBCTools.getConnection();
+		statement = connection.createStatement();
+		resultSet = statement.executeQuery(sql);
+
+		if (resultSet.next()) {
+			System.out.println("登录成功!");
+		} else {
+			System.out.println("用户名和密码不匹配或用户名不存在. ");
+		}
+
+	} catch (Exception e) {
+		e.printStackTrace();
+	} finally {
+		JDBCTools.release( statement, connection,resultSet);
+	}
+}	
 	
 	
 //*==============================================================================*/
@@ -107,7 +212,7 @@ public class JDBCTest {
 				employee=new Employee(resultSet.getInt(1),resultSet.getString(2),resultSet.getString(3),resultSet.getInt(4));
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		finally {

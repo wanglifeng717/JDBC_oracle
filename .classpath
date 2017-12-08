@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/ojdbc14.jar" sourcepath="C:/oracle/product/10.2.0/db_1/jdbc/lib/ojdbc14.jar"/>
 	<classpathentry kind="lib" path="lib/classes12.jar"/>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.36-bin.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

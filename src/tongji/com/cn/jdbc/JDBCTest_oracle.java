@@ -12,7 +12,7 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
-import com.mysql.jdbc.UpdatableResultSet;
+
 
 import oracle.jdbc.OracleDriver;
 
