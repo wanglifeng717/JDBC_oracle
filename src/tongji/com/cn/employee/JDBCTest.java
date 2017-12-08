@@ -1,12 +1,145 @@
 package tongji.com.cn.employee;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Scanner;
 
 import org.junit.Test;
 
+
+
 public class JDBCTest {
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//*==============================================================================*/
+//*==============================================================================*/	
+//*==============================================================================*/
+	/**
+	 * 验证一个员工的信息。
+	 * 从数据库里面查找，有就打印，没有就返回查无此人
+	 * 
+	 */
+	@Test
+	public void testGetEmployee()
+	{
+		//1.得到查询类型，因为where子句后面必须有判定条件
+		int searchType= getSearchTypeFromConsole();
+		//2.具体查询员工信息，查询大的员工在赋给对象。这里默认库里面就一条信息
+		Employee employee=searchEmployee(searchType);
+		//3.打印员工的信息
+		printEmployee(employee);
+		
+	}
 
 	
+	/**
+	 * 打印员工的的信息
+	 * @param employee
+	 */
+	
+	private void printEmployee(Employee employee) {
+		if(employee!=null)
+			System.out.println(employee);
+		else
+			System.out.println("查无此人");
+		
+	}
+
+	/**
+	 * 具体查询一个员工的信息
+	 * @param searchType
+	 * @return
+	 */
+	
+	private Employee searchEmployee(int searchType) {
+		String sql="select employee_id,last_name name,email,salary from employees where ";
+		
+		Scanner scanner=new Scanner(System.in);
+		//1.根据用户的输入类型，提示用户补充信息，并完成sql的拼接
+		if(searchType==1)
+		{
+			System.out.println("请输入姓名");
+			String name=scanner.next();
+			sql=sql+"last_name='"+name+"'";
+		}
+		else
+		{
+			System.out.println("请输入工资");
+			int salary=scanner.nextInt();
+			sql=sql+"salary="+salary;
+		}
+		System.out.println(sql);
+		//2.执行一个查询
+		Employee employee=getEmployee(sql);
+		return employee;
+	}
+/**
+ * 根据传入的SQL返回员工对象
+ * @param sql
+ * @return
+ */
+	private Employee getEmployee(String sql) {
+		Connection connection=null;
+		Statement statement=null;
+		ResultSet resultSet=null;
+		Employee employee=null;
+		try {
+			connection=JDBCTools.getConnection();
+			statement=connection.createStatement();
+			resultSet=statement.executeQuery(sql);
+			
+			if(resultSet.next())
+			{
+				employee=new Employee(resultSet.getInt(1),resultSet.getString(2),resultSet.getString(3),resultSet.getInt(4));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			JDBCTools.release(statement, connection,resultSet);
+		}
+		
+				
+		return employee;
+	}
+
+	/**
+	 * 从控制台读入一个整数, 确定要查询的类型
+	 * 
+	 * @return: 1.用last_name查询. 2. 用工资salary查询 其他的无效. 并提示请用户重新输入.
+	 */
+private int getSearchTypeFromConsole() 
+{
+	System.out.println("请输入查询的类型1，用姓名查询。2，用工资查询");
+	
+	Scanner scanner = new Scanner(System.in);
+	int type=scanner.nextInt();	
+	if(type!=1 && type!=2)
+	{
+		System.out.println("请输入正确的参询类型");
+		throw new RuntimeException();
+	}
+	return type;
+}
+//*==============================================================================*/
+//*==============================================================================*/
+//*==============================================================================*/
+//*==============================================================================*/
     /*面向对象的方式向表里面插入一条数据
      * 1.建立和表对应的类
      * 2.新建类，赋值
