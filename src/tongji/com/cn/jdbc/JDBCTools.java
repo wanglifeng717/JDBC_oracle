@@ -3,6 +3,7 @@ package tongji.com.cn.jdbc;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
 
@@ -15,7 +16,36 @@ import java.util.Properties;
 
 public class JDBCTools {
 
-	
+	/*更加高级的版本：关闭Statement,connection,resultSet*/
+	public static void release(Statement statement,Connection connection,ResultSet resultSet)
+	{
+		if(resultSet!=null)
+		 {
+			 try {
+				resultSet.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		 }
+		
+		if(statement!=null)
+		 {
+			 try {
+				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		 }
+		 
+		 if(connection!=null)
+		 {
+			 try {
+				connection.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		 }
+	}
 
 	/**
 	 * 关闭 Statement 和 Connection
@@ -29,7 +59,7 @@ public class JDBCTools {
 			 try {
 				statement.close();
 			} catch (Exception e) {
-				// TODO: handle exception
+				e.printStackTrace();
 			}
 		 }
 		 
@@ -38,7 +68,7 @@ public class JDBCTools {
 			 try {
 				connection.close();
 			} catch (Exception e) {
-				// TODO: handle exception
+				e.printStackTrace();
 			}
 		 }
 					 

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -17,6 +18,48 @@ import oracle.jdbc.OracleDriver;
 
 public class JDBCTest_oracle {
 
+	/**
+	 * ResultSet: 结果集. 封装了使用 JDBC 进行查询的结果. 
+	 * 1. 调用 Statement 对象的 executeQuery(sql) 可以得到结果集.
+	 * 2. ResultSet 返回的实际上就是一张数据表. 有一个指针指向数据表的第一样的前面.
+	 * 可以调用 next() 方法检测下一行是否有效. 若有效该方法返回 true, 且指针下移. 相当于
+	 * Iterator 对象的 hasNext() 和 next() 方法的结合体
+	 * 3. 当指针对位到一行时, 可以通过调用 getXxx(index) 或 getXxx(columnName)
+	 * 获取每一列的值. 例如: getInt(1), getString("name")
+	 * 4. ResultSet 当然也需要进行关闭. 
+	 */
+	@Test
+	public  void testResultSet()
+	{
+		Connection connection=null;
+		Statement statement=null;
+		ResultSet resultSet=null;
+		try {
+			connection=JDBCTools.getConnection();
+			statement=connection.createStatement();
+			
+			String sql="select employee_id id,first_name name,email from employees where department_id=30";
+			resultSet=statement.executeQuery(sql);
+			
+			while(resultSet.next())
+			{
+				int id=resultSet.getInt("ID");
+				String name =resultSet.getString("name");
+				String email=resultSet.getString("email");
+				
+				System.out.println(id+","+name+","+email+"!");
+				
+					
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			JDBCTools.release(statement, connection, resultSet);
+		}
+	}
+	
+	
 	@Test
 	public void testUpdate() {
 		String sql_insert="insert into dept1 values(1,'wanglifeng','上海')";
