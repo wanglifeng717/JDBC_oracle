@@ -35,12 +35,15 @@ public class JDBCTest_oracle {
 		Statement statement=null;
 		ResultSet resultSet=null;
 		try {
+			//1. 获取 Connection
+			//2. 获取 Statement
 			connection=JDBCTools.getConnection();
 			statement=connection.createStatement();
-			
+			//3. 准备 SQL
 			String sql="select employee_id id,first_name name,email from employees where department_id=30";
+			//4. 执行查询, 得到 ResultSet
 			resultSet=statement.executeQuery(sql);
-			
+			//5. 处理 ResultSet
 			while(resultSet.next())
 			{
 				int id=resultSet.getInt("ID");
