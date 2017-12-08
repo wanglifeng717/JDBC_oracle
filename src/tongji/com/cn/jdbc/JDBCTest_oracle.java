@@ -6,14 +6,44 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
+
+import com.mysql.jdbc.UpdatableResultSet;
 
 import oracle.jdbc.OracleDriver;
 
 public class JDBCTest_oracle {
 
+	@Test
+	public void testUpdate() {
+		String sql_insert="insert into dept1 values(1,'wanglifeng','上海')";
+		String sql_update="update dept1 set dname='zhangtian' where deptno=1";
+		String sql_delete="delete from dept1 where deptno=1 ";
+		Update(sql_delete);
+	}
+	/**
+	 * 通用的更新的方法: 包括 INSERT、UPDATE、DELETE
+	 * 版本 1.
+	 */
+	public void Update(String sql)
+	{
+		Connection connection=null;
+		Statement statement=null;
+			try {
+				connection = JDBCTools.getConnection();
+				statement = connection.createStatement();
+				statement.executeUpdate(sql);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			finally {
+				JDBCTools.release(statement, connection);
+			}
+	}
+	
 //	最正统的方式，用DriverManager的方式。
 	@Test
 	public void testDriverManager() throws SQLException, IOException, InstantiationException, IllegalAccessException, ClassNotFoundException
