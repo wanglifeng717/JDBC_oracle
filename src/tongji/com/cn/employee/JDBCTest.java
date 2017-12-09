@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -29,23 +30,30 @@ public class JDBCTest {
 @Test
 public void testGet()
 {
-	String sql="select employee_id,last_name  from employees where employee_id=?";
-	Employee employee=get(Employee.class,sql,200);
-	System.out.println(employee);
+	String sql="select employee_id,last_name  from employees where department_id=?";
+	ArrayList<Employee> arrayList=get(Employee.class,sql,80);
+	for(Employee e:arrayList)
+	{
+		System.out.println(e);
+	}
 }
 /**
  * 查询方法，以后你只要传类，和sql语句就可以了。 
+ * @param <T>
+ * @param <T>
  * @param clazz
  * @param sql
  * @param args
  * @return
  */
-public <T> T get(Class<T> clazz,String sql,Object ... args)
+public  <T> ArrayList<T> get(Class<T> clazz,String sql,Object ... args)
 {
 	T entity =null;
 	Connection connection=null;
 	PreparedStatement preparedStatement=null;
 	ResultSet resultSet=null;
+	//一定要定义在这里，定义在try块里面后面是访问不到的，上面的同理。
+	ArrayList<T> arrayList_entity=new ArrayList<T>();
 	try {
 		//1.得到resultSet对象
 		connection=JDBCTools.getConnection();
@@ -58,32 +66,47 @@ public <T> T get(Class<T> clazz,String sql,Object ... args)
 		resultSet = preparedStatement.executeQuery();
 		//2.得到resultsetMetaDate对象
 		ResultSetMetaData resultSetMetaData=resultSet.getMetaData();
-		//3. 创建一个 Map<String, Object> 对象, 键: SQL 查询的列的别名, 
-		//值: 列的值
-		Map<String, Object> map=new HashMap<>();
-		//4. 处理结果集. 利用 ResultSetMetaData 填充 3 对应的 Map 对象
-		if(resultSet.next())
+		
+		
+		
+		//3. 处理结果集. 利用 ResultSetMetaData 填充 3 对应的 Map 对象
+		//可能存在多个条记录，新建一个list用于保存。
+		ArrayList<Map<String, Object>> arrayList=new ArrayList<Map<String, Object>>();
+		while(resultSet.next())
 		{
+			//4. 创建一个 Map<String, Object> 对象, 键: SQL 查询的列的别名, 
+			Map<String, Object> map=new HashMap<>();
 			for(int i=0; i<resultSetMetaData.getColumnCount();i++)
 			{
 				String columnLabel = resultSetMetaData.getColumnLabel(i+1);
 				Object columnValue = resultSet.getObject(i+1);
 				map.put(columnLabel, columnValue);
 			}
+			//那结果保存在list中
+			arrayList.add(map);
+			
 		}
-		//5. 若 Map 不为空集, 利用反射创建 clazz 对应的对象
-		if(map.size()>0)
+	
+		//4. 若 Map 不为空集, 利用反射创建 clazz 对应的对象
+		//建立一个list存储反射修改过后的对象。
+		//遍历集合，为每个对象赋值。然后把对象保存到最终要返回的对象数组中。
+		if(arrayList.size()>0)
 		{
-			entity =clazz.newInstance();
-			//6. 遍历 Map 对象, 利用反射为 Class 对象的对应的属性赋值.
-			for(Map.Entry<String, Object> entry:map.entrySet())
+			for(Map<String, Object>map_list:arrayList)
 			{
-				String fieldName =entry.getKey().toLowerCase();
-				Object value=entry.getValue();
+				entity =clazz.newInstance();
+				//6. 遍历 Map 对象, 利用反射为 Class 对象的对应的属性赋值.
+				for(Map.Entry<String, Object> entry:map_list.entrySet())
+				{
+					String fieldName =entry.getKey().toLowerCase();
+					Object value=entry.getValue();
+					ReflectionUtils.setFieldValue(entity, fieldName, value);
+					
+				}
+				arrayList_entity.add(entity);
 				
-				
-				ReflectionUtils.setFieldValue(entity, fieldName, value);
 			}
+			
 		}
 		
 	} catch (Exception e) {
@@ -92,7 +115,7 @@ public <T> T get(Class<T> clazz,String sql,Object ... args)
 	{
 		JDBCTools.release(resultSet,preparedStatement, connection);
 	}
-	return entity;
+	return arrayList_entity;
 }
 	
 
