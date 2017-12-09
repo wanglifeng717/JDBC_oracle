@@ -1,23 +1,105 @@
 package tongji.com.cn.employee;
 
+import java.awt.Window.Type;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Test;
 
 public class JDBCTest {
 	
 	
+//我们查询的时候查学生和查员工字段完全不一样。我们有办法把这两个方法写成一个统一的方法吗
+/**
+ * 通用的查询方法：可以根据传入的 SQL、Class 对象返回 SQL 对应的记录的对象
+ * @param clazz: 描述对象的类型
+ * @param sql: SQL 语句。可能带占位符
+ * @param args: 填充占位符的可变参数。
+ * @return
+ */
 	
+@Test
+public void testGet()
+{
+	String sql="select employee_id,last_name  from employees where employee_id=?";
+	Employee employee=get(Employee.class,sql,200);
+	System.out.println(employee);
+}
+/**
+ * 查询方法，以后你只要传类，和sql语句就可以了。 
+ * @param clazz
+ * @param sql
+ * @param args
+ * @return
+ */
+public <T> T get(Class<T> clazz,String sql,Object ... args)
+{
+	T entity =null;
+	Connection connection=null;
+	PreparedStatement preparedStatement=null;
+	ResultSet resultSet=null;
+	try {
+		//1.得到resultSet对象
+		connection=JDBCTools.getConnection();
+		preparedStatement =connection.prepareStatement(sql);
+		
+		for(int i=0;i<args.length;i++)
+		{
+			preparedStatement.setObject(i+1, args[i]);
+		}
+		resultSet = preparedStatement.executeQuery();
+		//2.得到resultsetMetaDate对象
+		ResultSetMetaData resultSetMetaData=resultSet.getMetaData();
+		//3. 创建一个 Map<String, Object> 对象, 键: SQL 查询的列的别名, 
+		//值: 列的值
+		Map<String, Object> map=new HashMap<>();
+		//4. 处理结果集. 利用 ResultSetMetaData 填充 3 对应的 Map 对象
+		if(resultSet.next())
+		{
+			for(int i=0; i<resultSetMetaData.getColumnCount();i++)
+			{
+				String columnLabel = resultSetMetaData.getColumnLabel(i+1);
+				Object columnValue = resultSet.getObject(i+1);
+				map.put(columnLabel, columnValue);
+			}
+		}
+		//5. 若 Map 不为空集, 利用反射创建 clazz 对应的对象
+		if(map.size()>0)
+		{
+			entity =clazz.newInstance();
+			//6. 遍历 Map 对象, 利用反射为 Class 对象的对应的属性赋值.
+			for(Map.Entry<String, Object> entry:map.entrySet())
+			{
+				String fieldName =entry.getKey().toLowerCase();
+				Object value=entry.getValue();
+				
+				
+				ReflectionUtils.setFieldValue(entity, fieldName, value);
+			}
+		}
+		
+	} catch (Exception e) {
+		e.printStackTrace();
+	}finally
+	{
+		JDBCTools.release(resultSet,preparedStatement, connection);
+	}
+	return entity;
+}
 	
-	
-	
-	
-	
+
+
+//*==============================================================================*/
+//*==============================================================================*/	
+//*==============================================================================*/	
 	
 @Test
 public  void testPreparedStatement()
@@ -90,7 +172,7 @@ public void testSQLInjection2() {
 	} catch (Exception e) {
 		e.printStackTrace();
 	} finally {
-		JDBCTools.release( preparedStatement, connection,resultSet);
+		JDBCTools.release( resultSet,preparedStatement, connection);
 	}
 }
 
@@ -125,7 +207,7 @@ public void testSQLInjection() {
 	} catch (Exception e) {
 		e.printStackTrace();
 	} finally {
-		JDBCTools.release( statement, connection,resultSet);
+		JDBCTools.release( resultSet,statement, connection);
 	}
 }	
 	
@@ -216,7 +298,7 @@ public void testSQLInjection() {
 			e.printStackTrace();
 		}
 		finally {
-			JDBCTools.release(statement, connection,resultSet);
+			JDBCTools.release(resultSet,statement, connection);
 		}
 		
 				

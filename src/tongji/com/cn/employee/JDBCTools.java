@@ -62,15 +62,24 @@ public class JDBCTools {
 			e.printStackTrace();
 		} finally {
 			// 5. 关闭数据库资源: 由里向外关闭.
-			release(statement, connection,null);
+			release(null,statement, connection);
 		}
 	}
 	
 	
 	
 	/*更加高级的版本：关闭Statement,connection,resultSet*/
-	public static void release(Statement statement,Connection connection,ResultSet resultSet)
+	public static void release(ResultSet resultSet,Statement statement,Connection connection)
 	{
+		if(connection!=null)
+		 {
+			 try {
+				connection.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		 }
+		
 		if(resultSet!=null)
 		 {
 			 try {
@@ -79,20 +88,11 @@ public class JDBCTools {
 				e.printStackTrace();
 			}
 		 }
-		
-		if(statement!=null)
+		 
+		 if(statement!=null)
 		 {
 			 try {
 				statement.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		 }
-		 
-		 if(connection!=null)
-		 {
-			 try {
-				connection.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
