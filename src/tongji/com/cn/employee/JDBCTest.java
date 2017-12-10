@@ -100,15 +100,11 @@ public  <T> ArrayList<T> get(Class<T> clazz,String sql,Object ... args)
 				{
 					String fieldName =entry.getKey().toLowerCase();
 					Object value=entry.getValue();
-					ReflectionUtils.setFieldValue(entity, fieldName, value);
-					
+					ReflectionUtils.setFieldValue(entity, fieldName, value);					
 				}
-				arrayList_entity.add(entity);
-				
-			}
-			
-		}
-		
+				arrayList_entity.add(entity);	
+			}			
+		}		
 	} catch (Exception e) {
 		e.printStackTrace();
 	}finally
@@ -295,6 +291,7 @@ public void testSQLInjection() {
 		System.out.println(sql);
 		//2.执行一个查询
 		Employee employee=getEmployee(sql);
+		
 		return employee;
 	}
 /**
