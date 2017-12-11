@@ -1,6 +1,8 @@
 package tongji.com.cn.DAO;
 
 
+import static org.junit.Assert.assertEquals;
+
 import java.sql.Date;
 
 import org.junit.Test;
@@ -12,7 +14,10 @@ public class DAOTest
 	public  void testGetForValue() {
 		String sql="select last_name from employees where department_id=?";
 		Object object=dao.getForValue(sql, 80);
-		System.out.println(object);
+		assertEquals("Russel", object);
+		
+		
+		
 	}
 	@Test
 	public void testUpdate()
