@@ -1,6 +1,6 @@
-package tongji.com.cn.employee;
+package com.tongji.employee;
 
-import java.awt.Window.Type;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.hamcrest.core.IsInstanceOf;
+
 import org.junit.Test;
 
 public class JDBCTest {

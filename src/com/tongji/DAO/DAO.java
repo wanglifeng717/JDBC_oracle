@@ -1,4 +1,4 @@
-package tongji.com.cn.DAO;
+package com.tongji.DAO;
 
 
 import java.lang.reflect.InvocationTargetException;

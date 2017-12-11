@@ -1,4 +1,4 @@
-package tongji.com.cn.employee;
+package com.tongji.employee;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

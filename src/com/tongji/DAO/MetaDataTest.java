@@ -7,7 +7,7 @@
 * @date 2017Äê12ÔÂ11ÈÕ
 * @version 1.0
 */
-package tongji.com.cn.DAO;
+package com.tongji.DAO;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

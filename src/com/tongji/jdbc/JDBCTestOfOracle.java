@@ -1,4 +1,4 @@
-package tongji.com.cn.jdbc;
+package com.tongji.jdbc;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import oracle.jdbc.OracleDriver;
 
-public class JDBCTest_oracle {
+public class JDBCTestOfOracle {
 
 	/**
 	 * ResultSet: 结果集. 封装了使用 JDBC 进行查询的结果. 

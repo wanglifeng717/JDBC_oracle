@@ -1,4 +1,4 @@
-package tongji.com.cn.employee;
+package com.tongji.employee;
 
 public class Employee {
 

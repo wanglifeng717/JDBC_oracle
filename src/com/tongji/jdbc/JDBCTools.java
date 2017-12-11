@@ -1,85 +1,24 @@
-package tongji.com.cn.employee;
+package com.tongji.jdbc;
 
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
 
+
+
+
+
+
+
+
 public class JDBCTools {
-	
-	
-	/**
-	 * 执行 SQL 的方法,使用preparedstatement构成重载
-	 * 
-	 * @param sql: insert, update 或 delete。 而不包含 select
-	 */
-	public static void update(String sql,Object ... args )
-	{//用可变参数更好，不然程序里面还要封装成数组才能用。这样写的话，你爱传几个就传几个
-		Connection connection=null;
-		PreparedStatement preparedStatement=null;
-		try {
-			connection=JDBCTools.getConnection();
-			preparedStatement=connection.prepareStatement(sql);
-			
-			for(int i=0;i<args.length;i++)
-			{
-				preparedStatement.setObject(i+1, args[i]);
-			}
-			
-			preparedStatement.executeUpdate();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			JDBCTools.release(preparedStatement, connection);
-		}
-	}
-	
-	/**
-	 * 执行 SQL 的方法
-	 * 
-	 * @param sql: insert, update 或 delete。 而不包含 select
-	 */
-	public static void update(String sql) {
-		Connection connection = null;
-		Statement statement = null;
 
-		try {
-			// 1. 获取数据库连接
-			connection = getConnection();
-
-			// 2. 调用 Connection 对象的 createStatement() 方法获取 Statement 对象
-			statement = connection.createStatement();
-
-			// 4. 发送 SQL 语句: 调用 Statement 对象的 executeUpdate(sql) 方法
-			statement.executeUpdate(sql);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			// 5. 关闭数据库资源: 由里向外关闭.
-			release(null,statement, connection);
-		}
-	}
-	
-	
-	
 	/*更加高级的版本：关闭Statement,connection,resultSet*/
-	public static void release(ResultSet resultSet,Statement statement,Connection connection)
+	public static void release(Statement statement,Connection connection,ResultSet resultSet)
 	{
-		if(connection!=null)
-		 {
-			 try {
-				connection.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		 }
-		
 		if(resultSet!=null)
 		 {
 			 try {
@@ -88,11 +27,20 @@ public class JDBCTools {
 				e.printStackTrace();
 			}
 		 }
-		 
-		 if(statement!=null)
+		
+		if(statement!=null)
 		 {
 			 try {
 				statement.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		 }
+		 
+		 if(connection!=null)
+		 {
+			 try {
+				connection.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
