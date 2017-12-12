@@ -24,7 +24,7 @@ import org.junit.Test;
 * @author mdm(computer in lab)  
 * @date 2017年12月11日  
 */
-public class TestOfPrimaryKey {
+public class GetPrimaryKeyTest {
 	/**
 	 * 功能：在插入一条数据的同时，我得到那个主键值
 	 * 		oracle里面没有自增的主键，可以自己定义序列和触发器来完成类似的操作
