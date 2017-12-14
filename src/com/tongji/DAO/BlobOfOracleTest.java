@@ -1,6 +1,6 @@
 /**
 * Title: BlobOfOracleTest.java
-* Description: oracle的大文件BLOB插入和读取的操作。
+* Description: oracle的大文件BLOB插入和读取的操作测试类。
 * Copyright: Copyright (c) 2017
 * Company: TongjiUniversity
 * @author mdm(computer in lab)
