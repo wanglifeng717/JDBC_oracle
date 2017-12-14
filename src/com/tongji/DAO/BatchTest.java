@@ -70,6 +70,4 @@ public class BatchTest {
 			JDBCTools.releaseDB(null, preparedStatement, connection);
 		}
 	}
-
-	
 }
